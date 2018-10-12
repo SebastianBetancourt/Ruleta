@@ -1,3 +1,4 @@
+package ruleta;
 
 public class Principal {
 
