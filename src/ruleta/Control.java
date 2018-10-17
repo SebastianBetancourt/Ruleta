@@ -26,6 +26,24 @@ public class Control {
 			determinarTipoApuesta(moneda);
 		}
 	}
+
+	private void determinarNumerosApostados(Moneda moneda) {
+		switch(moneda.getTipoDeApuesta()){
+		case Moneda.COLOR: break;
+		case Moneda.PAR: break;
+		case Moneda.PASE: break;
+		case Moneda.DOCENA: break;
+		case Moneda.COLUMNA: break;
+		case Moneda.DOSDOCENAS: break;
+		case Moneda.DOSCOLUMNAS: break;
+		case Moneda.SEISENA: break;
+		case Moneda.CUADRO: break;
+		case Moneda.TRANSVERSAL: break;
+		case Moneda.CABALLO: break;
+		case Moneda.PLENO: break;
+		case Moneda.CERO: break;
+		}
+	}
 	
 	private void determinarTipoApuesta(Moneda moneda) {
 		int filaCasilla = moneda.getFilaCasilla();
@@ -33,7 +51,6 @@ public class Control {
 		int filaRegion = moneda.getFilaRegion();
 		int colRegion = moneda.getColumnaRegion();
 		if(filaCasilla == 4) {
-			moneda.setPremio(2);
 			if(colCasilla > 4  && colCasilla < 9){
 				moneda.setTipoDeApuesta(Moneda.COLOR);
 			} else if(colCasilla == 3 || colCasilla == 4 || colCasilla == 9 || colCasilla == 10) {
@@ -45,73 +62,54 @@ public class Control {
 			if(filaRegion == 0){
 				if(colRegion == 1 || ((colCasilla == 1 && colRegion == 0) || (colCasilla == 13) && colRegion == 2)) {
 					moneda.setTipoDeApuesta(Moneda.TRANSVERSAL);
-					moneda.setPremio(12);
 				} else if(colRegion != 1 && colCasilla != 0) {
 					moneda.setTipoDeApuesta(Moneda.SEISENA);
-					moneda.setPremio(6);
 				}
 			}else if(((filaCasilla== 8 || filaCasilla == 4) && filaRegion == 2) || ((filaCasilla== 9 || filaCasilla == 5) && filaRegion == 0)) {
 				moneda.setTipoDeApuesta(Moneda.DOSDOCENAS);
-				moneda.setPremio((float) 1.5);
 			}else if(colCasilla != 0 && colCasilla != 14) {
 				moneda.setTipoDeApuesta(Moneda.DOCENA);
-				moneda.setPremio(3);
 			}
 			
 			moneda.setTipoDeApuesta(Moneda.DOCENA);
-			moneda.setPremio(3);
 		}else if(filaCasilla == 0 && filaRegion == 0){
 				if(colRegion == 1 || ((colCasilla == 1 && colRegion == 0) || (colCasilla == 12) && colRegion == 2)) {
 					moneda.setTipoDeApuesta(Moneda.TRANSVERSAL);
-					moneda.setPremio(12);
 				} else if(colCasilla != 0) {
 					moneda.setTipoDeApuesta(Moneda.SEISENA);
-					moneda.setPremio(6);
 				}
 		}else if(filaCasilla == 2 && filaRegion == 2){
 			if(colRegion == 1 || ((colCasilla == 1 && colRegion == 0) || (colCasilla == 12) && colRegion == 2)) {
 				moneda.setTipoDeApuesta(Moneda.TRANSVERSAL);
-				moneda.setPremio(12);
 			} else if(colCasilla != 0) {
 				moneda.setTipoDeApuesta(Moneda.SEISENA);
-				moneda.setPremio(6);
 			}
 		}else if(colCasilla == 0 && (filaCasilla == 0 || filaCasilla == 1)){
 			if((filaRegion == 2 && colRegion == 2) || (filaRegion == 2 && colRegion == 0)){
 				moneda.setTipoDeApuesta(Moneda.TRANSVERSAL);
-				moneda.setPremio(12);
 			}
 		}else if(colCasilla == 1 && (filaCasilla == 1 || filaCasilla == 2)){
 			if((filaRegion == 0 && colRegion == 0) || (filaRegion == 0 && colRegion == 2)){
 				moneda.setTipoDeApuesta(Moneda.TRANSVERSAL);
-				moneda.setPremio(12);
 			}
 		}else if(colCasilla == 13 && filaCasilla < 3){
 			if(filaRegion  == 1 || (filaCasilla == 0 && filaRegion == 0)|| (filaCasilla == 2 && filaRegion == 2)) {
 				moneda.setTipoDeApuesta(Moneda.COLUMNA);
-				moneda.setPremio(3);
 			}else {
 				moneda.setTipoDeApuesta(Moneda.DOSCOLUMNAS);
-				moneda.setPremio((float) 1.5);
 			}
 		}else if(colCasilla == 0 && filaCasilla < 3) {
 			moneda.setTipoDeApuesta(Moneda.CERO);
-			moneda.setPremio(36);
 		}else if(colCasilla == 12 && colRegion == 2 && (filaRegion == 2 || filaRegion == 0)) {
 			moneda.setTipoDeApuesta(Moneda.CABALLO);
-			moneda.setPremio(18);
 		}else if((filaRegion == 2 || filaRegion == 0) && (colRegion == 2 || filaRegion == 0)) {
 			moneda.setTipoDeApuesta(Moneda.CUADRO);
-			moneda.setPremio(9);
 		}else if((filaRegion == 0 && colRegion == 1) ||(filaRegion == 2 && colRegion == 1) ||(filaRegion == 1 && colRegion == 0) ||(filaRegion == 1 && colRegion == 2)) {
 			moneda.setTipoDeApuesta(Moneda.CABALLO);
-			moneda.setPremio(18);
 		}else if(filaRegion == 1 && colRegion == 1) {
 			moneda.setTipoDeApuesta(Moneda.PLENO);
-			moneda.setPremio(36);
 		}else {
 			moneda.setTipoDeApuesta(Moneda.ERROR);
-			moneda.setPremio(1);
 		}
 	}
 	

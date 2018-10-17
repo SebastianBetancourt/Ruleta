@@ -1,27 +1,43 @@
 package vista;
 
+import java.awt.CardLayout;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.OverlayLayout;
+import javax.swing.SwingUtilities;
 
-public class Mesa extends JPanel {
+public class Mesa extends JFrame {
 
 
-	public static final int ANCHO_MESA = 800;
-	public static final int ALTO_MESA = 300;
-	public static final int ANCHO_CASILLA = 30;
-	public static final int ALTO_CASILLA = 30;
-	public static final int ANCHO_REGION = ANCHO_CASILLA / 3;
-	public static final int ALTO_REGION = ALTO_CASILLA / 3;
-
+	public static final Dimension DIMENSIONES_MESA = new Dimension(1700, 780);
+	public static final Dimension DIMENSIONES_CASILLA = new Dimension(109, 109);
+	public static final Dimension DIMENSIONES_CENTRO_CASILLA = new Dimension((int) DIMENSIONES_CASILLA.getWidth() / 2, (int) DIMENSIONES_CASILLA.getHeight() / 2);
+	public static final Dimension DIMENSIONES_LATERAL_CASILLA = new Dimension((int) (DIMENSIONES_CASILLA.getWidth() + 1) / 4, (int) (DIMENSIONES_CASILLA.getWidth() +1) / 4);
+	public static final Dimension ORIGEN_TABLERO = new Dimension(108, 74);
 	
+	
+	private MacroContenedor macroContenedor;
+	private OverlayLayout macroEsquema;
+	private Container contenedorMonedas;
 	/**
 	 * Conjunto de monedas que están en la mesa
 	 */
 	private ArrayList<Moneda> monedas;
 	
 	public Mesa() {
-		// TODO Auto-generated constructor stub
+		monedas = new ArrayList<Moneda>(); 
+		monedas.add(new Moneda());
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				iniciarGUI();
+			}
+		});
 	}
 
 	/**
@@ -32,8 +48,51 @@ public class Mesa extends JPanel {
 		return 4;
 	}
 	
+	private void iniciarGUI(){
+		// Instanciar los macro controladores
+		macroContenedor = new MacroContenedor();
+		this.setContentPane(macroContenedor);
+		macroEsquema = new OverlayLayout(macroContenedor);
+		macroContenedor.setLayout(macroEsquema);
+		
+		contenedorMonedas = new Container();
+		macroContenedor.add(contenedorMonedas);
+		contenedorMonedas.setLayout(null);
+		graficarMonedas();
+		
+		this.setTitle("la OMS considera el juego patológico como un trastorno mental, como un trastorno del control de los impulsos.");
+		this.setResizable(false);
+		this.setPreferredSize(DIMENSIONES_MESA);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+	}
 
-	
+	private void graficarMonedas() {
+		for(Moneda moneda : monedas) {
+			JLabel graficaMoneda = new JLabel();
+			graficaMoneda.setIcon(moneda.getImagen());
+			graficaMoneda.setBounds(moneda.getPosicionX(), moneda.getPosicionY(),moneda.ANCHO, moneda.ALTO);
+			// TODO LISTENER ARRASTRAR
+			contenedorMonedas.add(graficaMoneda);
+			contenedorMonedas.repaint();
+			graficaMoneda.setVisible(true);
+		}
+		
+	}
+
+	private class MacroContenedor extends Container {
+		private ImageIcon imagen = new ImageIcon("img/mesa.png");
+
+		@Override
+		public void paint(java.awt.Graphics g) {
+			g.drawImage(imagen.getImage(), 0, 0, this);
+			super.paint(g);
+		}
+
+	}
 	
 }
+
 

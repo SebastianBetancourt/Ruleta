@@ -1,9 +1,18 @@
 package vista;
 
+import java.util.ArrayList;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 public class Moneda {
 
+	/**
+	 * Tipos de apuesta en los que la moneda puede estar
+	 */
+	public static final int ERROR = -1;
 	public static final int COLOR = 0;
-	public static final int PAR = 1;
+	public static final int PAR = 1; 
 	public static final int PASE = 2;
 	public static final int DOCENA = 3;
 	public static final int COLUMNA = 4;
@@ -14,6 +23,11 @@ public class Moneda {
 	public static final int TRANSVERSAL = 9;
 	public static final int CABALLO = 10;
 	public static final int PLENO = 11;
+	public static final int CERO = 12;
+	private static final float[] premios = {2, 2, 2, 3, 3, 1.5f, 1.5f, 6, 9, 12, 18, 36, 36};
+	
+	public static final int ANCHO = 70;
+	public static final int ALTO = 70;
 
 		
 	/**
@@ -33,13 +47,14 @@ public class Moneda {
 	 * Indicador del valor de la moneda, de acuerdo a VALORES
 	 */
 	private int valor;
+	private ArrayList<Integer> valoresAApostar;
+
+	public ArrayList<Integer> getValoresAAPostar() {
+		return valoresAApostar;
+	}
 	
 	public float getPremio() {
 		return premio;
-	}
-
-	public void setPremio(float premio) {
-		this.premio = premio;
 	}
 
 	public int getTipoDeApuesta() {
@@ -47,6 +62,7 @@ public class Moneda {
 	}
 
 	public void setTipoDeApuesta(int tipoDeApuesta) {
+		premio = premios[tipoDeApuesta];
 		this.tipoDeApuesta = tipoDeApuesta;
 	}
 
@@ -59,6 +75,8 @@ public class Moneda {
 	
 	public Moneda() {
 		// TODO Auto-generated constructor stub
+		posicionX = 500;
+		posicionY = 500;
 	}
 
 	public int getPosicionX() {
@@ -77,22 +95,47 @@ public class Moneda {
 	 * @return La fila de la casilla en la que se encuentra
 	 */
 	public int getFilaCasilla() {
-		return posicionY / Mesa.ANCHO_CASILLA;
+		return (int) (posicionY / Mesa.DIMENSIONES_CASILLA.getWidth());
 	}
 	
 	public int getColumnaCasilla() {
-		return posicionX / Mesa.ALTO_CASILLA;
+		return (int) (posicionX / Mesa.DIMENSIONES_CASILLA.getHeight());
 	}
 	
 	/**
-	 * @return La fila de la región en la que se encuentra, relativa a la casilla. Está entre 0 y 3.
+	 * @return La fila de la región en la que se encuentra, relativa a la casilla. Está entre 0 y 3 (exclusivo).
 	 */
 	public int getFilaRegion() {
-		return (posicionY % Mesa.ANCHO_CASILLA) / Mesa.ANCHO_REGION;
+		int region;
+		int posRelativa = (int) ((posicionY-Mesa.ORIGEN_TABLERO.getWidth()) % Mesa.DIMENSIONES_CASILLA.getWidth());
+		if(posRelativa < Mesa.DIMENSIONES_LATERAL_CASILLA.getWidth()) {
+			region = 0;
+		}else if(posRelativa < 2*Mesa.DIMENSIONES_LATERAL_CASILLA.getWidth()) {
+			region = 1;
+		}
+		else {
+			region = 2;
+		}
+		return region;
 	}
 	
 	public int getColumnaRegion() {
-		return (posicionX % Mesa.ALTO_CASILLA) / Mesa.ALTO_REGION;
+		int region;
+		int posRelativa = (int) ((posicionX-Mesa.ORIGEN_TABLERO.getHeight()) % Mesa.DIMENSIONES_CASILLA.getHeight());
+		if(posRelativa < Mesa.DIMENSIONES_LATERAL_CASILLA.getHeight()) {
+			region = 0;
+		}else if(posRelativa < 2*Mesa.DIMENSIONES_LATERAL_CASILLA.getHeight()) {
+			region = 1;
+		}
+		else {
+			region = 2;
+		}
+		return region;
+	}
+
+	public Icon getImagen() {
+		// TODO
+		return new ImageIcon("img/moneda.png");
 	}
 
 }
