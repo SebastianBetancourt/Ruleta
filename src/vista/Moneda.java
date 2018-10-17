@@ -1,11 +1,16 @@
 package vista;
 
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
-public class Moneda {
+public class Moneda extends JLabel {
 
 	/**
 	 * Tipos de apuesta en los que la moneda puede estar
@@ -35,14 +40,9 @@ public class Moneda {
 	 */
 	public static final int[] VALORES = {1, 25, 50};
 	
-	/**
-	 * Componente X de la posición del centro de la moneda en la mesa 
-	 */
-	private int posicionX;
-	/**
-	 * Componente Y de la posición del centro de la moneda en la mesa
-	 */
-	private int posicionY;
+
+	public Point posAntesDeMoverse;
+	
 	/**
 	 * Indicador del valor de la moneda, de acuerdo a VALORES
 	 */
@@ -73,41 +73,81 @@ public class Moneda {
 	private float premio;
 	private int tipoDeApuesta;
 	
-	public Moneda() {
-		// TODO Auto-generated constructor stub
-		posicionX = 500;
-		posicionY = 500;
-	}
+	public Moneda(int xInicial, int yInicial) {
+		super();
+		this.setBounds(xInicial, yInicial, ANCHO, ALTO);
+		this.setIcon(new ImageIcon("img/moneda.png"));
+		this.addMouseMotionListener(new MouseMotionListener() {
+	
+			public void mouseDragged(MouseEvent e) {
+				int cambioX = e.getX() - posAntesDeMoverse.x;
+				int cambioY = e.getY() - posAntesDeMoverse.x;
+				Moneda.this.setLocation(Moneda.this.getX()+cambioX, Moneda.this.getY()+cambioY);
+				Moneda.this.repaint();
+			}
 
-	public int getPosicionX() {
-		return posicionX;
-	}
+			public void mouseMoved(MouseEvent arg0) {
+			}
+			
+		});
 
-	public int getPosicionY() {
-		return posicionY;
+		this.addMouseListener(new MouseListener() {
+
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mousePressed(MouseEvent e) {
+				posAntesDeMoverse = e.getPoint();
+				
+			}
+
+			public void mouseReleased(MouseEvent arg0) {
+				posAntesDeMoverse = Moneda.this.getLocation();
+			}
+			
+		});
+	
 	}
 
 	public int getValor() {
 		return valor;
 	}
 	
+	public Point getCentro() {
+		return new Point((getY()+ALTO/2),(getX()+ANCHO/2));
+	}
+	
 	/**
 	 * @return La fila de la casilla en la que se encuentra
 	 */
 	public int getFilaCasilla() {
-		return (int) (posicionY / Mesa.DIMENSIONES_CASILLA.getWidth());
+		return (int) (getCentro().y / Mesa.DIMENSIONES_CASILLA.getHeight());
 	}
 	
 	public int getColumnaCasilla() {
-		return (int) (posicionX / Mesa.DIMENSIONES_CASILLA.getHeight());
+		return (int) (getCentro().x / Mesa.DIMENSIONES_CASILLA.getWidth());
 	}
+	
+	
 	
 	/**
 	 * @return La fila de la región en la que se encuentra, relativa a la casilla. Está entre 0 y 3 (exclusivo).
 	 */
 	public int getFilaRegion() {
 		int region;
-		int posRelativa = (int) ((posicionY-Mesa.ORIGEN_TABLERO.getWidth()) % Mesa.DIMENSIONES_CASILLA.getWidth());
+		int posRelativa = (int) ((getCentro().y -Mesa.ORIGEN_TABLERO.getWidth()) % Mesa.DIMENSIONES_CASILLA.getWidth());
 		if(posRelativa < Mesa.DIMENSIONES_LATERAL_CASILLA.getWidth()) {
 			region = 0;
 		}else if(posRelativa < 2*Mesa.DIMENSIONES_LATERAL_CASILLA.getWidth()) {
@@ -121,7 +161,7 @@ public class Moneda {
 	
 	public int getColumnaRegion() {
 		int region;
-		int posRelativa = (int) ((posicionX-Mesa.ORIGEN_TABLERO.getHeight()) % Mesa.DIMENSIONES_CASILLA.getHeight());
+		int posRelativa = (int) ((getCentro().x-Mesa.ORIGEN_TABLERO.getHeight()) % Mesa.DIMENSIONES_CASILLA.getHeight());
 		if(posRelativa < Mesa.DIMENSIONES_LATERAL_CASILLA.getHeight()) {
 			region = 0;
 		}else if(posRelativa < 2*Mesa.DIMENSIONES_LATERAL_CASILLA.getHeight()) {
@@ -131,11 +171,6 @@ public class Moneda {
 			region = 2;
 		}
 		return region;
-	}
-
-	public Icon getImagen() {
-		// TODO
-		return new ImageIcon("img/moneda.png");
 	}
 
 }

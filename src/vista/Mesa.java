@@ -3,6 +3,9 @@ package vista;
 import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -31,7 +34,7 @@ public class Mesa extends JFrame {
 	
 	public Mesa() {
 		monedas = new ArrayList<Moneda>(); 
-		monedas.add(new Moneda());
+		monedas.add(new Moneda(500, 500));
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -71,14 +74,10 @@ public class Mesa extends JFrame {
 
 	private void graficarMonedas() {
 		for(Moneda moneda : monedas) {
-			JLabel graficaMoneda = new JLabel();
-			graficaMoneda.setIcon(moneda.getImagen());
-			graficaMoneda.setBounds(moneda.getPosicionX(), moneda.getPosicionY(),moneda.ANCHO, moneda.ALTO);
-			// TODO LISTENER ARRASTRAR
-			contenedorMonedas.add(graficaMoneda);
-			contenedorMonedas.repaint();
-			graficaMoneda.setVisible(true);
+			contenedorMonedas.add(moneda);
 		}
+		
+
 		
 	}
 
