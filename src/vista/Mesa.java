@@ -14,25 +14,30 @@ import javax.swing.JLabel;
 import javax.swing.OverlayLayout;
 import javax.swing.SwingUtilities;
 
+import ruleta.Control;
+
 public class Mesa extends JFrame {
 
 
 	public static final Dimension DIMENSIONES_MESA = new Dimension(1700, 780);
 	public static final Dimension DIMENSIONES_CASILLA = new Dimension(109, 109);
-	public static final Dimension DIMENSIONES_CENTRO_CASILLA = new Dimension((int) DIMENSIONES_CASILLA.getWidth() / 2, (int) DIMENSIONES_CASILLA.getHeight() / 2);
-	public static final Dimension DIMENSIONES_LATERAL_CASILLA = new Dimension((int) (DIMENSIONES_CASILLA.getWidth() + 1) / 4, (int) (DIMENSIONES_CASILLA.getWidth() +1) / 4);
-	public static final Dimension ORIGEN_TABLERO = new Dimension(108, 74);
+	public static final Dimension DIMENSIONES_CENTRO_REGION = new Dimension((int) DIMENSIONES_CASILLA.getWidth() / 2, (int) DIMENSIONES_CASILLA.getHeight() / 2);
+	public static final Dimension DIMENSIONES_LATERAL_REGION = new Dimension((int) (DIMENSIONES_CASILLA.getWidth() + 1) / 4, (int) (DIMENSIONES_CASILLA.getWidth() +1) / 4);
+	public static final Dimension ORIGEN_TABLERO = new Dimension(108, 75);
 	
 	
 	private MacroContenedor macroContenedor;
 	private OverlayLayout macroEsquema;
 	private Container contenedorMonedas;
+	protected Control control;
 	/**
 	 * Conjunto de monedas que están en la mesa
 	 */
 	private ArrayList<Moneda> monedas;
 	
 	public Mesa() {
+		control = new Control();
+		
 		monedas = new ArrayList<Moneda>(); 
 		monedas.add(new Moneda(500, 500));
 		
@@ -76,11 +81,8 @@ public class Mesa extends JFrame {
 		for(Moneda moneda : monedas) {
 			contenedorMonedas.add(moneda);
 		}
-		
-
-		
 	}
-
+	
 	private class MacroContenedor extends Container {
 		private ImageIcon imagen = new ImageIcon("img/mesa.png");
 
@@ -93,5 +95,3 @@ public class Mesa extends JFrame {
 	}
 	
 }
-
-

@@ -82,8 +82,17 @@ public class Moneda extends JLabel {
 			public void mouseDragged(MouseEvent e) {
 				int cambioX = e.getX() - posAntesDeMoverse.x;
 				int cambioY = e.getY() - posAntesDeMoverse.x;
-				Moneda.this.setLocation(Moneda.this.getX()+cambioX, Moneda.this.getY()+cambioY);
+				int nuevoX = Moneda.this.getX()+cambioX;
+				int nuevoY = Moneda.this.getY()+cambioY;
+				if(nuevoX > Mesa.DIMENSIONES_MESA.getWidth() || nuevoX < 0) {
+					nuevoX = Moneda.this.getX();
+				}
+				if(nuevoY > Mesa.DIMENSIONES_MESA.getHeight() || nuevoY < 0) {
+					nuevoY = Moneda.this.getY();
+				}
+				Moneda.this.setLocation(nuevoX, nuevoY);
 				Moneda.this.repaint();
+				
 			}
 
 			public void mouseMoved(MouseEvent arg0) {
@@ -115,6 +124,8 @@ public class Moneda extends JLabel {
 
 			public void mouseReleased(MouseEvent arg0) {
 				posAntesDeMoverse = Moneda.this.getLocation();
+				determinarTipoApuesta();
+				System.out.println(tipoDeApuesta);
 			}
 			
 		});
@@ -126,21 +137,19 @@ public class Moneda extends JLabel {
 	}
 	
 	public Point getCentro() {
-		return new Point((getY()+ALTO/2),(getX()+ANCHO/2));
+		return new Point((getY()+(ALTO/2)),(getX()+(ANCHO/2)));
 	}
 	
 	/**
 	 * @return La fila de la casilla en la que se encuentra
 	 */
 	public int getFilaCasilla() {
-		return (int) (getCentro().y / Mesa.DIMENSIONES_CASILLA.getHeight());
+		return (int) ((getCentro().y-Mesa.ORIGEN_TABLERO.getWidth()) / Mesa.DIMENSIONES_CASILLA.getHeight());
 	}
 	
 	public int getColumnaCasilla() {
-		return (int) (getCentro().x / Mesa.DIMENSIONES_CASILLA.getWidth());
-	}
-	
-	
+		return (int) ((getCentro().x-Mesa.ORIGEN_TABLERO.getHeight()) / Mesa.DIMENSIONES_CASILLA.getWidth());
+	}	
 	
 	/**
 	 * @return La fila de la región en la que se encuentra, relativa a la casilla. Está entre 0 y 3 (exclusivo).
@@ -148,9 +157,9 @@ public class Moneda extends JLabel {
 	public int getFilaRegion() {
 		int region;
 		int posRelativa = (int) ((getCentro().y -Mesa.ORIGEN_TABLERO.getWidth()) % Mesa.DIMENSIONES_CASILLA.getWidth());
-		if(posRelativa < Mesa.DIMENSIONES_LATERAL_CASILLA.getWidth()) {
+		if(posRelativa < Mesa.DIMENSIONES_LATERAL_REGION.getWidth()) {
 			region = 0;
-		}else if(posRelativa < 2*Mesa.DIMENSIONES_LATERAL_CASILLA.getWidth()) {
+		}else if(posRelativa < Mesa.DIMENSIONES_CENTRO_REGION.getWidth()+Mesa.DIMENSIONES_LATERAL_REGION.getWidth()) {
 			region = 1;
 		}
 		else {
@@ -162,15 +171,90 @@ public class Moneda extends JLabel {
 	public int getColumnaRegion() {
 		int region;
 		int posRelativa = (int) ((getCentro().x-Mesa.ORIGEN_TABLERO.getHeight()) % Mesa.DIMENSIONES_CASILLA.getHeight());
-		if(posRelativa < Mesa.DIMENSIONES_LATERAL_CASILLA.getHeight()) {
+		if(posRelativa < Mesa.DIMENSIONES_LATERAL_REGION.getHeight()) {
 			region = 0;
-		}else if(posRelativa < 2*Mesa.DIMENSIONES_LATERAL_CASILLA.getHeight()) {
+		}else if(posRelativa < Mesa.DIMENSIONES_CENTRO_REGION.getHeight()+Mesa.DIMENSIONES_LATERAL_REGION.getHeight()) {
 			region = 1;
 		}
 		else {
 			region = 2;
 		}
 		return region;
+	}
+	
+	public void determinarTipoApuesta() {
+		int filaCasilla = this.getFilaCasilla();
+		int colCasilla = this.getColumnaCasilla();
+		int filaRegion = this.getFilaRegion();
+		int colRegion = this.getColumnaRegion();
+
+	
+		System.out.println(filaCasilla + "," + filaRegion + " : " + colCasilla + "," + colRegion+" cords: "+getCentro().x+","+getCentro().y);
+		
+		if(filaCasilla == 4) {
+			if(colCasilla > 4  && colCasilla < 9){
+				this.setTipoDeApuesta(this.COLOR);
+			} else if(colCasilla == 3 || colCasilla == 4 || colCasilla == 9 || colCasilla == 10) {
+				this.setTipoDeApuesta(this.PAR);
+			} else if(colCasilla == 1 || colCasilla == 2 || colCasilla == 11 || colCasilla == 12) {
+				this.setTipoDeApuesta(this.PASE);
+			}
+		} 
+//---------------------------------------------------------------------------------------------------------------
+		else if(filaCasilla == 3) {
+			if(filaRegion == 0){
+				if(colRegion == 1 || ((colCasilla == 1 && colRegion == 0) || (colCasilla == 13) && colRegion == 2)) {
+					this.setTipoDeApuesta(this.TRANSVERSAL);
+				} else if(colRegion != 1 && colCasilla != 0) {
+					this.setTipoDeApuesta(this.SEISENA);
+				}
+			}else if(((filaCasilla== 8 || filaCasilla == 4) && filaRegion == 2) || ((filaCasilla== 9 || filaCasilla == 5) && filaRegion == 0)) {
+				this.setTipoDeApuesta(this.DOSDOCENAS);
+			}else if(colCasilla != 0 && colCasilla != 14) {
+				this.setTipoDeApuesta(this.DOCENA);
+			}
+			else {
+			this.setTipoDeApuesta(this.DOCENA);
+			}
+		}else if(filaCasilla == 0 && filaRegion == 0){
+				if(colRegion == 1 || ((colCasilla == 1 && colRegion == 0) || (colCasilla == 12) && colRegion == 2)) {
+					this.setTipoDeApuesta(this.TRANSVERSAL);
+				} else if(colCasilla != 0) {
+					this.setTipoDeApuesta(this.SEISENA);
+				}
+		}else if(filaCasilla == 2 && filaRegion == 2){
+			if(colRegion == 1 || ((colCasilla == 1 && colRegion == 0) || (colCasilla == 12) && colRegion == 2)) {
+				this.setTipoDeApuesta(this.TRANSVERSAL);
+			} else if(colCasilla != 0) {
+				this.setTipoDeApuesta(this.SEISENA);
+			}
+		}else if(colCasilla == 0 && (filaCasilla == 0 || filaCasilla == 1)){
+			if((filaRegion == 2 && colRegion == 2) || (filaRegion == 2 && colRegion == 0)){
+				this.setTipoDeApuesta(this.TRANSVERSAL);
+			}
+		}else if(colCasilla == 1 && (filaCasilla == 1 || filaCasilla == 2)){
+			if((filaRegion == 0 && colRegion == 0) || (filaRegion == 0 && colRegion == 2)){
+				this.setTipoDeApuesta(this.TRANSVERSAL);
+			}
+		}else if(colCasilla == 13 && filaCasilla < 3){
+			if(filaRegion  == 1 || (filaCasilla == 0 && filaRegion == 0)|| (filaCasilla == 2 && filaRegion == 2)) {
+				this.setTipoDeApuesta(this.COLUMNA);
+			}else {
+				this.setTipoDeApuesta(this.DOSCOLUMNAS);
+			}
+		}else if(colCasilla == 0 && filaCasilla < 3) {
+			this.setTipoDeApuesta(this.CERO);
+		}else if(colCasilla == 12 && colRegion == 2 && (filaRegion == 2 || filaRegion == 0)) {
+			this.setTipoDeApuesta(this.CABALLO);
+		}else if((filaRegion == 2 || filaRegion == 0) && (colRegion == 2 || filaRegion == 0)) {
+			this.setTipoDeApuesta(this.CUADRO);
+		}else if((filaRegion == 0 && colRegion == 1) ||(filaRegion == 2 && colRegion == 1) ||(filaRegion == 1 && colRegion == 0) ||(filaRegion == 1 && colRegion == 2)) {
+			this.setTipoDeApuesta(this.CABALLO);
+		}else if(filaRegion == 1 && colRegion == 1) {
+			this.setTipoDeApuesta(this.PLENO);;
+		}else {
+			this.setTipoDeApuesta(this.ERROR);
+		}
 	}
 
 }

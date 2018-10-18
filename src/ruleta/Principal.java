@@ -12,7 +12,7 @@ public class Principal {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Mesa test = new Mesa();
+		Mesa mesa = new Mesa();
 	}
 
 }
