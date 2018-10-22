@@ -3,6 +3,7 @@ package vista;
 import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -23,7 +24,7 @@ public class Mesa extends JFrame {
 	public static final Dimension DIMENSIONES_CASILLA = new Dimension(109, 109);
 	public static final Dimension DIMENSIONES_CENTRO_REGION = new Dimension((int) DIMENSIONES_CASILLA.getWidth() / 2, (int) DIMENSIONES_CASILLA.getHeight() / 2);
 	public static final Dimension DIMENSIONES_LATERAL_REGION = new Dimension((int) (DIMENSIONES_CASILLA.getWidth() + 1) / 4, (int) (DIMENSIONES_CASILLA.getWidth() +1) / 4);
-	public static final Dimension ORIGEN_TABLERO = new Dimension(108, 75);
+	public static final Point ORIGEN_TABLERO = new Point(108, 75);
 	
 	
 	private MacroContenedor macroContenedor;
