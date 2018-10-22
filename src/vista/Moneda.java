@@ -76,7 +76,9 @@ public class Moneda extends JLabel {
 	public void setTipoDeApuesta(int tipoDeApuesta) {
 		if(tipoDeApuesta == Moneda.ERROR) {
 			//TODO manejar casos de error de apuesta
-		}else {
+			premio = 1;
+			this.tipoDeApuesta = tipoDeApuesta;
+		} else {
 			premio = premios[tipoDeApuesta];
 			this.tipoDeApuesta = tipoDeApuesta;
 		}
@@ -160,13 +162,23 @@ public class Moneda extends JLabel {
 	 * @return La fila de la casilla en la que se encuentra
 	 */
 	public int getFilaCasilla() {
-		return (int) ((getCentro().y - Mesa.ORIGEN_TABLERO.y) / Mesa.DIMENSIONES_CASILLA
-				.getHeight());
+		int diferencia = getCentro().y - Mesa.ORIGEN_TABLERO.y;
+		int fila = -1;
+		if(diferencia >= 0) {
+			fila = (int) (diferencia / Mesa.DIMENSIONES_CASILLA
+					.getHeight());
+		}
+		return fila;
 	}
 
 	public int getColumnaCasilla() {
-		return (int) ((getCentro().x - Mesa.ORIGEN_TABLERO.x) / Mesa.DIMENSIONES_CASILLA
-				.getWidth());
+		int diferencia = getCentro().x - Mesa.ORIGEN_TABLERO.x;
+		int columna = -1;
+		if(diferencia >= 0) {
+			columna = (int) (diferencia / Mesa.DIMENSIONES_CASILLA
+					.getWidth());
+		}
+		return columna;
 	}
 
 	/**
@@ -175,8 +187,8 @@ public class Moneda extends JLabel {
 	 */
 	public int getFilaRegion() {
 		int region;
-		int posRelativa = (int) ((getCentro().y - Mesa.ORIGEN_TABLERO
-				.y) % Mesa.DIMENSIONES_CASILLA.getHeight());
+		int posRelativa = Math.floorMod((int) (getCentro().y - Mesa.ORIGEN_TABLERO
+				.y), (int) Mesa.DIMENSIONES_CASILLA.getHeight());
 		if (posRelativa < Mesa.DIMENSIONES_LATERAL_REGION.getHeight()) {
 			region = 0;
 		} else if (posRelativa < Mesa.DIMENSIONES_CENTRO_REGION.getHeight()
@@ -190,8 +202,8 @@ public class Moneda extends JLabel {
 
 	public int getColumnaRegion() {
 		int region;
-		int posRelativa = (int) ((getCentro().x - Mesa.ORIGEN_TABLERO
-				.x) % Mesa.DIMENSIONES_CASILLA.getWidth());
+		int posRelativa = Math.floorMod((int) (getCentro().x - Mesa.ORIGEN_TABLERO
+				.x), (int) Mesa.DIMENSIONES_CASILLA.getWidth());
 		
 		if (posRelativa < Mesa.DIMENSIONES_LATERAL_REGION.getWidth()) {
 			region = 0;
@@ -210,7 +222,8 @@ public class Moneda extends JLabel {
 		int filaRegion = this.getFilaRegion();
 		int columnaRegion = this.getColumnaRegion();
 
-		if(filaCasilla == 4 && columnaCasilla > 4 && columnaCasilla < 9){this.setTipoDeApuesta(Moneda.COLOR);
+		if(filaCasilla > 2 && (columnaCasilla == 0 || columnaCasilla == 13)) {this.setTipoDeApuesta(Moneda.ERROR);
+		}else if(filaCasilla == 4 && columnaCasilla > 4 && columnaCasilla < 9){this.setTipoDeApuesta(Moneda.COLOR);
 		}else if(filaCasilla == 4 && ((columnaCasilla > 2 && columnaCasilla < 5) || (columnaCasilla > 8 && columnaCasilla < 11))){this.setTipoDeApuesta(Moneda.PAR);
 		}else if(filaCasilla == 4 && ((columnaCasilla > 0 && columnaCasilla < 3) || (columnaCasilla > 10 && columnaCasilla < 13))){this.setTipoDeApuesta(Moneda.PASE);
 		}else if(filaCasilla == 3 && ((columnaRegion == 1 && filaRegion != 0) || (columnaCasilla == 1 && columnaRegion == 0 && filaRegion != 0) || (columnaCasilla == 13 && columnaRegion == 2 && filaRegion != 0)) && columnaCasilla >0){this.setTipoDeApuesta(Moneda.DOCENA);
@@ -227,7 +240,7 @@ public class Moneda extends JLabel {
 		
 		System.out.println(filaCasilla + "," + filaRegion + ":"
 				+ columnaCasilla + "," + columnaRegion + " cords: "
-				+ getCentro().x + "," + getCentro().y + " "+tipos[tipoDeApuesta]);
+				+ getCentro().x + "," + getCentro().y + " "+tipos[tipoDeApuesta] + " = "+ tipoDeApuesta);
 
 	}
 
