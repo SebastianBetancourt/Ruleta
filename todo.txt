@@ -1,0 +1,10 @@
+S bordes entre casillas de la misma docena dan error 
+J color 19 da negro
+S falta inclye 18
+J docenas muestra la primera docena mas el numero docena
+S columnas ?????????????
+S doscolumnas de abajo muestra la de arriba, y en desorden
+J seisena ?????
+J transversal de fila: el primer numero menos 1
+S caballo: lateral izquierdo e inferior trocados
+
