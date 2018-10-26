@@ -49,7 +49,7 @@ public class Mesa extends JFrame {
 			}
 		});
 	}
-
+	
 	/**
 	 * @return El número que cayó de la ruleta después de girarla
 	 */
@@ -86,15 +86,18 @@ public class Mesa extends JFrame {
 		}
 	}
 	
+	private void jugarRonda(){
+		control.calcularResultado(monedas, rodarRuleta());
+	}
+	
 	private class MacroContenedor extends Container {
 		private ImageIcon imagen = new ImageIcon("img/mesa.png");
-
+		
 		@Override
 		public void paint(java.awt.Graphics g) {
 			g.drawImage(imagen.getImage(), 0, 0, this);
 			super.paint(g);
 		}
-
 	}
 	
 }

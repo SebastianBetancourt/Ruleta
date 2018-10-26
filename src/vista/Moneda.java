@@ -7,18 +7,16 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.function.Predicate;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+@SuppressWarnings("serial")
 public class Moneda extends JLabel {
 
 	/**
 	 * Tipos de apuesta en los que la moneda puede estar
 	 */
-	public static final int ERROR = -1;
 	public static final int COLOR = 0;
 	public static final int PAR = 1;
 	public static final int PASE = 2;
@@ -32,11 +30,12 @@ public class Moneda extends JLabel {
 	public static final int CABALLO = 10;
 	public static final int PLENO = 11;
 	public static final int CERO = 12;
+	public static final int ERROR = 13;
 	private static final float[] premios = { 2, 2, 2, 3, 3, 1.5f, 1.5f, 6, 9,
-			12, 18, 36, 36 };
+			12, 18, 36, 36, 1 };
 	private static final String[] tipos = { "COLOR", "PAR", "PASE", "DOCENA",
 			"COLUMNA", "DOSDOCENAS", "DOSCOLUMNAS", "SEISENA", "CUADRO",
-			"TRANSVERSAL", "CABALLO", "PLENO", "CERO" };
+			"TRANSVERSAL", "CABALLO", "PLENO", "CERO", "ERROR" };
 
 	public static final int ANCHO = 35;
 	public static final int ALTO = 35;
@@ -46,7 +45,8 @@ public class Moneda extends JLabel {
 	 */
 	public static final int[] VALORES = { 1, 25, 50 };
 
-	public Point posAntesDeMoverse;
+	private Point puntoDeAgarre;
+	private Point posAntesDeMoverse;
 
 	/**
 	 * Indicador del valor de la moneda, de acuerdo a VALORES
@@ -92,19 +92,19 @@ public class Moneda extends JLabel {
 		this.addMouseMotionListener(new MouseMotionListener() {
 
 			public void mouseDragged(MouseEvent e) {
-				int cambioX = e.getX() - posAntesDeMoverse.x;
-				int cambioY = e.getY() - posAntesDeMoverse.x;
+				int cambioX = e.getX() - puntoDeAgarre.x;
+				int cambioY = e.getY() - puntoDeAgarre.y;
 				int nuevoX = Moneda.this.getX() + cambioX;
 				int nuevoY = Moneda.this.getY() + cambioY;
-				if (nuevoX > Mesa.DIMENSIONES_MESA.getWidth() || nuevoX < 0) {
-					nuevoX = Moneda.this.getX() - ANCHO/2;
+				if ((nuevoX > Mesa.DIMENSIONES_MESA.getWidth()) || (nuevoX < 0)) {
+					nuevoX = Moneda.this.getX();
 				}
-				if (nuevoY > Mesa.DIMENSIONES_MESA.getHeight() || nuevoY < 0) {
-					nuevoY = Moneda.this.getY() - ALTO/2;
+				if ((nuevoY > Mesa.DIMENSIONES_MESA.getHeight()) || (nuevoY < 0)) {
+					nuevoY = Moneda.this.getY();
 				}
 				Moneda.this.setLocation(nuevoX, nuevoY);
 				Moneda.this.repaint();
-
+				
 			}
 
 			public void mouseMoved(MouseEvent arg0) {
@@ -130,18 +130,22 @@ public class Moneda extends JLabel {
 			}
 
 			public void mousePressed(MouseEvent e) {
-				posAntesDeMoverse = e.getPoint();
+				puntoDeAgarre = e.getPoint();
+				posAntesDeMoverse = Moneda.this.getLocation();
 
 			}
 
 			public void mouseReleased(MouseEvent arg0) {
-				posAntesDeMoverse = Moneda.this.getLocation();
-				determinarTipoApuesta();
+				System.out.println(puntoDeAgarre);
+				if(determinarTipoApuesta()) {
+					puntoDeAgarre = Moneda.this.getLocation();
+				}else {
+					Moneda.this.setLocation(posAntesDeMoverse);
+					Moneda.this.repaint();
+				}
 				determinarValoresAApostar();
 			}
-
 		});
-
 	}
 
 	public int getValor() {
@@ -210,7 +214,7 @@ public class Moneda extends JLabel {
 		return region;
 	}
 
-	public void determinarTipoApuesta() {
+	public boolean determinarTipoApuesta() {
 		int filaCasilla = this.getFilaCasilla();
 		int columnaCasilla = this.getColumnaCasilla();
 		int filaRegion = this.getFilaRegion();
@@ -218,6 +222,7 @@ public class Moneda extends JLabel {
 
 		if (filaCasilla > 2 && (columnaCasilla == 0 || columnaCasilla == 13)) {
 			this.setTipoDeApuesta(Moneda.ERROR);
+			return false;
 		} else if (filaCasilla == 4 && columnaCasilla > 4 && columnaCasilla < 9) {
 			this.setTipoDeApuesta(Moneda.COLOR);
 		} else if (filaCasilla == 4
@@ -288,7 +293,10 @@ public class Moneda extends JLabel {
 			this.setTipoDeApuesta(Moneda.CERO);
 		} else {
 			this.setTipoDeApuesta(Moneda.ERROR);
+			return false;
 		}
+		
+		return true;
 
 	}
 
@@ -312,9 +320,9 @@ public class Moneda extends JLabel {
 		int columnaCasilla = this.getColumnaCasilla();
 		int filaRegion = this.getFilaRegion();
 		int columnaRegion = this.getColumnaRegion();
-
+		
 		int numero = (columnaCasilla * 3 - filaCasilla);
-
+		
 		valoresAApostar.clear();
 		switch (tipoDeApuesta) {
 			case Moneda.COLOR:
@@ -332,7 +340,7 @@ public class Moneda extends JLabel {
 					}
 				}
 				break;
-	
+				
 			case Moneda.PAR:
 				if (columnaCasilla < 5) {
 					for (int i = 2; i < 37; i = i + 2)
@@ -342,7 +350,7 @@ public class Moneda extends JLabel {
 						valoresAApostar.add(i);
 				}
 				break;
-	
+				
 			case Moneda.PASE:
 				if (columnaCasilla < 3) {
 					for (int i = 1; i < 19; i++)
@@ -352,7 +360,7 @@ public class Moneda extends JLabel {
 						valoresAApostar.add(i);
 				}
 				break;
-	
+				
 			case Moneda.DOCENA:
 				for (int index = 1; index < 13; index++)
 					valoresAApostar.add(12 * ((columnaCasilla - 1) / 4) + index);
@@ -363,7 +371,7 @@ public class Moneda extends JLabel {
 					valoresAApostar.add(i * 3 - filaCasilla);
 				}
 				break;
-	
+				
 			case Moneda.DOSDOCENAS:
 				if (columnaCasilla < 6) {
 					for (int i = 1; i <= 24; i++) {
@@ -375,7 +383,7 @@ public class Moneda extends JLabel {
 					}
 				}
 				break;
-	
+				
 			case Moneda.DOSCOLUMNAS:
 				if (filaCasilla == 0 || (filaCasilla == 1 && filaRegion == 0)) {
 					for (int i = 1; i < 13; i++) {
@@ -389,7 +397,7 @@ public class Moneda extends JLabel {
 					}
 				}
 				break;
-	
+				
 			case Moneda.SEISENA:
 				
 				int n=0;
@@ -402,7 +410,7 @@ public class Moneda extends JLabel {
 				}
 				
 				break;
-	
+				
 			case Moneda.CUADRO:
 				if (columnaRegion == 0 && filaRegion == 0)
 					valoresAApostar.addAll(Arrays.asList(new Integer[] {
@@ -417,6 +425,7 @@ public class Moneda extends JLabel {
 					valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
 							numero + 1, numero + 3, numero + 4 }));
 				break;
+				
 			case Moneda.TRANSVERSAL:
 				if (filaCasilla == 3 || (filaCasilla == 2 && filaRegion == 2)) {
 					valoresAApostar.addAll(Arrays.asList(new Integer[] { columnaCasilla * 3 - 2,
@@ -430,7 +439,7 @@ public class Moneda extends JLabel {
 							.addAll(Arrays.asList(new Integer[] { 0, 1, 2 }));
 				}
 				break;
-	
+				
 			case Moneda.CABALLO:
 				//CABALLOS QUE INVOLUCRAN EL CERO
 				if(columnaCasilla == 0)
@@ -456,12 +465,12 @@ public class Moneda extends JLabel {
 			case Moneda.PLENO:
 				valoresAApostar.add(numero);
 				break;
-	
+				
 			case Moneda.CERO:
 				valoresAApostar.add(0);
 				break;
 		}
-
+		
 		System.out.print(filaCasilla + "," + filaRegion + ":"
 				+ columnaCasilla + "," + columnaRegion + " ");
 		System.out.print(tipos[tipoDeApuesta]
@@ -471,5 +480,24 @@ public class Moneda extends JLabel {
 		}
 		System.out.print("\n");
 	}
-
+	
+	public boolean estaEnLaLista(int valorObtenido)
+	{
+		ArrayList<Integer> valoresAApostar = new ArrayList<Integer>(this.getValoresAAPostar());
+		int iterador = valoresAApostar.size();
+		while(iterador >= 1)
+		{		
+			iterador = valoresAApostar.size();
+			int mediana = valoresAApostar.get(iterador/2);
+			if(mediana == valorObtenido){
+				return true;
+			}else if(iterador == 1) {
+				break;
+			} else if(mediana<valorObtenido){
+				valoresAApostar = new ArrayList<Integer>(valoresAApostar.subList(iterador/2+1, iterador));
+			} else
+				valoresAApostar = new ArrayList<Integer>(valoresAApostar.subList(0, iterador/2));
+		}
+		return false;
+	}
 }
