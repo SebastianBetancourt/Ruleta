@@ -38,8 +38,8 @@ public class Moneda extends JLabel {
 			"COLUMNA", "DOSDOCENAS", "DOSCOLUMNAS", "SEISENA", "CUADRO",
 			"TRANSVERSAL", "CABALLO", "PLENO", "CERO" };
 
-	public static final int ANCHO = 70;
-	public static final int ALTO = 70;
+	public static final int ANCHO = 35;
+	public static final int ALTO = 35;
 
 	/**
 	 * Posibles valores de las fichas, de menor a mayor
@@ -97,10 +97,10 @@ public class Moneda extends JLabel {
 				int nuevoX = Moneda.this.getX() + cambioX;
 				int nuevoY = Moneda.this.getY() + cambioY;
 				if (nuevoX > Mesa.DIMENSIONES_MESA.getWidth() || nuevoX < 0) {
-					nuevoX = Moneda.this.getX();
+					nuevoX = Moneda.this.getX() - ANCHO/2;
 				}
 				if (nuevoY > Mesa.DIMENSIONES_MESA.getHeight() || nuevoY < 0) {
-					nuevoY = Moneda.this.getY();
+					nuevoY = Moneda.this.getY() - ALTO/2;
 				}
 				Moneda.this.setLocation(nuevoX, nuevoY);
 				Moneda.this.repaint();
@@ -226,11 +226,9 @@ public class Moneda extends JLabel {
 		} else if (filaCasilla == 4
 				&& ((columnaCasilla > 0 && columnaCasilla < 3) || (columnaCasilla > 10 && columnaCasilla < 13))) {
 			this.setTipoDeApuesta(Moneda.PASE);
-		} else if (filaCasilla == 3
-				&& ((columnaRegion == 1 && filaRegion != 0)
-						|| (columnaCasilla == 1 && columnaRegion == 0 && filaRegion != 0) || (columnaCasilla == 13
-						&& columnaRegion == 2 && filaRegion != 0))
-				&& columnaCasilla > 0) {
+		} else if (filaCasilla == 3 && filaRegion != 0
+				&& !((columnaRegion == 2 && (columnaCasilla == 4 || columnaCasilla == 8)) || (columnaRegion == 0 && (columnaCasilla == 5 || columnaCasilla == 9)))
+				&& columnaCasilla > 0 && columnaCasilla < 13) {
 			this.setTipoDeApuesta(Moneda.DOCENA);
 		} else if (columnaCasilla == 13
 				&& filaCasilla < 3
@@ -258,14 +256,22 @@ public class Moneda extends JLabel {
 				&& !(filaCasilla == 2 && filaRegion == 2)
 				&& !(columnaCasilla == 12 && columnaRegion == 2)) {
 			this.setTipoDeApuesta(Moneda.CUADRO);
-		} else if ((filaCasilla == 3 && filaRegion == 0 && (columnaRegion == 1
+		} else if (
+				// caso transversales superiores
+				((filaCasilla == 0 && filaRegion == 0 && (columnaRegion == 1
+						|| (columnaCasilla == 1 && columnaRegion == 0) || (columnaCasilla == 12 && columnaRegion == 2)))
+				// caso transversales inferiores
+				|| (filaCasilla == 3 && filaRegion == 0 && (columnaRegion == 1
 				|| (columnaCasilla == 1 && columnaRegion == 0) || (columnaCasilla == 12 && columnaRegion == 2)))
+				|| (filaCasilla == 2 && filaRegion == 2 && (columnaRegion == 1
+						|| (columnaCasilla == 1 && columnaRegion == 0) || (columnaCasilla == 12 && columnaRegion == 2))))
+				// transversales con cero
 				|| ((columnaCasilla == 0
 						&& (((filaCasilla == 0 || filaCasilla == 1) && (filaRegion == 2 && columnaRegion == 2))) || ((filaCasilla == 1 || filaCasilla == 2) && (filaRegion == 0 && columnaRegion == 2))))
 				|| ((columnaCasilla == 1
 						&& (((filaCasilla == 0 || filaCasilla == 1) && (filaRegion == 2 && columnaRegion == 0))) || ((filaCasilla == 1 || filaCasilla == 2) && (filaRegion == 0 && columnaRegion == 0))))) {
 			this.setTipoDeApuesta(Moneda.TRANSVERSAL);
-		} else if (columnaCasilla > 0
+		} else if (((columnaCasilla > 0) || (columnaCasilla == 0 && columnaRegion == 2))
 				&& columnaCasilla < 13
 				&& filaCasilla < 3
 				&& ((filaRegion == 1 && columnaRegion != 1) || (filaRegion != 1 && columnaRegion == 1))
@@ -283,11 +289,6 @@ public class Moneda extends JLabel {
 		} else {
 			this.setTipoDeApuesta(Moneda.ERROR);
 		}
-
-	}
-
-	private int determinarNumero() {
-		return ((this.getColumnaCasilla() - 1) * 3) + this.getColumnaCasilla();
 
 	}
 
@@ -364,7 +365,7 @@ public class Moneda extends JLabel {
 
 		case Moneda.COLUMNA:
 			for (int i = 1; i <= 12; i++) {
-				valoresAApostar.add(i * 3 - columnaCasilla);
+				valoresAApostar.add(i * 3 - filaCasilla);
 			}
 			break;
 
@@ -381,10 +382,10 @@ public class Moneda extends JLabel {
 			break;
 
 		case Moneda.DOSCOLUMNAS:
-			if (filaCasilla < 2) {
+			if (filaCasilla == 0 || (filaCasilla == 1 && filaRegion == 0)) {
 				for (int i = 1; i < 13; i++) {
-					valoresAApostar.add(i * 3);
 					valoresAApostar.add(i * 3 - 1);
+					valoresAApostar.add(i * 3);
 				}
 			} else {
 				for (int i = 1; i < 13; i++) {
@@ -429,9 +430,16 @@ public class Moneda extends JLabel {
 			break;
 
 		case Moneda.CABALLO:
-			if (columnaRegion == 1)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
-						numero - 3 }));
+			//CABALLOS QUE INVOLUCRAN EL CERO
+			if(columnaCasilla == 0)
+				valoresAApostar.addAll(Arrays.asList(new Integer[] { 0,
+						3 - filaCasilla}));
+			else if (columnaCasilla == 1 && columnaRegion == 0)
+				valoresAApostar.addAll(Arrays.asList(new Integer[] { 0,
+						numero}));
+			//CABALLOS NORMALES
+			else if (columnaRegion == 0)
+				valoresAApostar.addAll(Arrays.asList(new Integer[] {numero - 3, numero }));
 			else if (columnaRegion == 2)
 				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
 						numero + 3 }));
@@ -439,8 +447,8 @@ public class Moneda extends JLabel {
 				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
 						numero + 1 }));
 			else
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
-						numero - 1 }));
+				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero -1,
+						numero}));
 			break;
 
 		case Moneda.PLENO:
@@ -452,12 +460,14 @@ public class Moneda extends JLabel {
 			break;
 		}
 
-		System.out.println(filaCasilla + "," + filaRegion + ":"
-				+ columnaCasilla + "," + columnaRegion + " " //+ tipos[tipoDeApuesta]
-				+ " = " + tipoDeApuesta + "\nvaloresAApostar: ");
+		System.out.print(filaCasilla + "," + filaRegion + ":"
+				+ columnaCasilla + "," + columnaRegion + " ");
+		System.out.print(tipos[tipoDeApuesta]
+				+ " = " + tipoDeApuesta + "\n\tvaloresAApostar: \n\t");
 		for (int n : valoresAApostar) {
 			System.out.print(n + " ");
 		}
+		System.out.print("\n");
 	}
 
 }

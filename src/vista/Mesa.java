@@ -20,11 +20,11 @@ import ruleta.Control;
 public class Mesa extends JFrame {
 
 
-	public static final Dimension DIMENSIONES_MESA = new Dimension(1700, 780);
-	public static final Dimension DIMENSIONES_CASILLA = new Dimension(109, 109);
+	public static final Dimension DIMENSIONES_MESA = new Dimension(833, 391);
+	public static final Dimension DIMENSIONES_CASILLA = new Dimension(56, 56);
 	public static final Dimension DIMENSIONES_CENTRO_REGION = new Dimension((int) DIMENSIONES_CASILLA.getWidth() / 2, (int) DIMENSIONES_CASILLA.getHeight() / 2);
 	public static final Dimension DIMENSIONES_LATERAL_REGION = new Dimension((int) (DIMENSIONES_CASILLA.getWidth() + 1) / 4, (int) (DIMENSIONES_CASILLA.getWidth() +1) / 4);
-	public static final Point ORIGEN_TABLERO = new Point(108, 75);
+	public static final Point ORIGEN_TABLERO = new Point(50, 37);
 	
 	
 	private MacroContenedor macroContenedor;
@@ -40,7 +40,7 @@ public class Mesa extends JFrame {
 		control = new Control();
 		
 		monedas = new ArrayList<Moneda>(); 
-		monedas.add(new Moneda(500, 500));
+		monedas.add(new Moneda(200, 200));
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
