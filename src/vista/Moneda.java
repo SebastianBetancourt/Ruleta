@@ -57,7 +57,7 @@ public class Moneda extends JLabel {
 	public ArrayList<Integer> getValoresAAPostar() {
 		return valoresAApostar;
 	}
-
+    
 	public float getPremio() {
 		return premio;
 	}
@@ -298,17 +298,12 @@ public class Moneda extends JLabel {
 	 * @return true si y sólo si el numero es rojo en la ruleta
 	 */
 	private boolean esElNumeroRojo(int numero) {
-		boolean esRojo;
-		if (numero < 11 || (numero > 19 && numero < 29)) {
-			esRojo = true;
-		} else {
-			esRojo = false;
-		}
-
-		if (numero % 2 == 0) {
+		boolean esRojo = (numero < 11 || (numero > 19 && numero < 29));
+		
+		if (numero % 2 == 0 || numero == 19) {
 			esRojo = !esRojo;
 		}
-
+		
 		return esRojo;
 	}
 
@@ -322,142 +317,149 @@ public class Moneda extends JLabel {
 
 		valoresAApostar.clear();
 		switch (tipoDeApuesta) {
-		case Moneda.COLOR:
-			if (columnaCasilla < 7) {
-				for (int i = 1; i < 37; i++) {
-					if (!esElNumeroRojo(i)) {
+			case Moneda.COLOR:
+				if (columnaCasilla < 7) {
+					for (int i = 1; i < 37; i++) {
+						if (!esElNumeroRojo(i)) {
+							valoresAApostar.add(i);
+						}
+					}
+				} else {
+					for (int i = 1; i < 37; i++) {
+						if (esElNumeroRojo(i)) {
+							valoresAApostar.add(i);
+						}
+					}
+				}
+				break;
+	
+			case Moneda.PAR:
+				if (columnaCasilla < 5) {
+					for (int i = 2; i < 37; i = i + 2)
+						valoresAApostar.add(i);
+				} else {
+					for (int i = 1; i < 37; i = i + 2)
+						valoresAApostar.add(i);
+				}
+				break;
+	
+			case Moneda.PASE:
+				if (columnaCasilla < 3) {
+					for (int i = 1; i < 19; i++)
+						valoresAApostar.add(i);
+				} else {
+					for (int i = 18; i < 37; i++)
+						valoresAApostar.add(i);
+				}
+				break;
+	
+			case Moneda.DOCENA:
+				for (int index = 1; index < 13; index++)
+					valoresAApostar.add(12 * ((columnaCasilla - 1) / 4) + index);
+				break;
+	
+			case Moneda.COLUMNA:
+				for (int i = 1; i <= 12; i++) {
+					valoresAApostar.add(i * 3 - filaCasilla);
+				}
+				break;
+	
+			case Moneda.DOSDOCENAS:
+				if (columnaCasilla < 6) {
+					for (int i = 1; i <= 24; i++) {
+						valoresAApostar.add(i);
+					}
+				} else {
+					for (int i = 12; i <= 36; i++) {
 						valoresAApostar.add(i);
 					}
 				}
-			} else {
-				for (int i = 1; i < 37; i++) {
-					if (esElNumeroRojo(i)) {
-						valoresAApostar.add(i);
+				break;
+	
+			case Moneda.DOSCOLUMNAS:
+				if (filaCasilla == 0 || (filaCasilla == 1 && filaRegion == 0)) {
+					for (int i = 1; i < 13; i++) {
+						valoresAApostar.add(i * 3 - 1);
+						valoresAApostar.add(i * 3);
+					}
+				} else {
+					for (int i = 1; i < 13; i++) {
+						valoresAApostar.add(i * 3 - 2);
+						valoresAApostar.add(i * 3 - 1);
 					}
 				}
-			}
-			break;
-
-		case Moneda.PAR:
-			if (columnaCasilla < 5) {
-				for (int i = 2; i < 37; i = i + 2)
-					valoresAApostar.add(i);
-			} else {
-				for (int i = 1; i < 37; i = i + 2)
-					valoresAApostar.add(i);
-			}
-			break;
-
-		case Moneda.PASE:
-			if (columnaCasilla < 3) {
-				for (int i = 1; i < 19; i++)
-					valoresAApostar.add(i);
-			} else {
-				for (int i = 18; i < 37; i++)
-					valoresAApostar.add(i);
-			}
-			break;
-
-		case Moneda.DOCENA:
-			for (int index = 1; index < 13; index++)
-				valoresAApostar.add(columnaCasilla / 4 + index);
-			break;
-
-		case Moneda.COLUMNA:
-			for (int i = 1; i <= 12; i++) {
-				valoresAApostar.add(i * 3 - filaCasilla);
-			}
-			break;
-
-		case Moneda.DOSDOCENAS:
-			if (columnaCasilla < 6) {
-				for (int i = 1; i <= 24; i++) {
-					valoresAApostar.add(i);
+				break;
+	
+			case Moneda.SEISENA:
+				
+				int n=0;
+				
+				if(columnaRegion == 0)
+					n++;
+				
+				for (int i = -2; i <= 3; i++) {
+					valoresAApostar.add((columnaCasilla - n) * 3 + i);
 				}
-			} else {
-				for (int i = 12; i <= 36; i++) {
-					valoresAApostar.add(i);
+				
+				break;
+	
+			case Moneda.CUADRO:
+				if (columnaRegion == 0 && filaRegion == 0)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] {
+							numero - 3, numero - 2, numero, numero + 1 }));
+				else if (columnaRegion == 0 && filaRegion == 2)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] {
+							numero - 4, numero - 3, numero - 1, numero }));
+				else if (columnaRegion == 2 && filaRegion == 2)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] {
+							numero - 1, numero, numero + 2, numero + 3 }));
+				else
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
+							numero + 1, numero + 3, numero + 4 }));
+				break;
+			case Moneda.TRANSVERSAL:
+				if (filaCasilla == 3 || (filaCasilla == 2 && filaRegion == 2)) {
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { columnaCasilla * 3 - 2,
+							columnaCasilla * 3 - 1, columnaCasilla * 3 }));
+				} else if (filaCasilla == 0
+						|| (filaCasilla == 1 && filaRegion == 0)) {
+					valoresAApostar
+							.addAll(Arrays.asList(new Integer[] { 0, 2, 3 }));
+				} else {
+					valoresAApostar
+							.addAll(Arrays.asList(new Integer[] { 0, 1, 2 }));
 				}
-			}
-			break;
-
-		case Moneda.DOSCOLUMNAS:
-			if (filaCasilla == 0 || (filaCasilla == 1 && filaRegion == 0)) {
-				for (int i = 1; i < 13; i++) {
-					valoresAApostar.add(i * 3 - 1);
-					valoresAApostar.add(i * 3);
-				}
-			} else {
-				for (int i = 1; i < 13; i++) {
-					valoresAApostar.add(i * 3 - 2);
-					valoresAApostar.add(i * 3 - 1);
-				}
-			}
-			break;
-
-		case Moneda.SEISENA:
-			for (int i = 1; i <= 6; i++) {
-				valoresAApostar.add((columnaCasilla / 2) * 3 + i);
-			}
-			break;
-
-		case Moneda.CUADRO:
-			if (columnaRegion == 0 && filaRegion == 0)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] {
-						numero - 3, numero - 2, numero, numero + 1 }));
-			else if (columnaRegion == 0 && filaRegion == 2)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] {
-						numero - 4, numero - 3, numero - 1, numero }));
-			else if (columnaRegion == 2 && filaRegion == 2)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] {
-						numero - 1, numero, numero + 2, numero + 3 }));
-			else
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
-						numero + 1, numero + 3, numero + 4 }));
-			break;
-		case Moneda.TRANSVERSAL:
-			if (filaCasilla == 3) {
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
-						columnaCasilla * 3 - 1, columnaCasilla * 3 }));
-			} else if (filaCasilla == 0
-					|| (filaCasilla == 1 && filaRegion == 0)) {
-				valoresAApostar
-						.addAll(Arrays.asList(new Integer[] { 0, 2, 3 }));
-			} else {
-				valoresAApostar
-						.addAll(Arrays.asList(new Integer[] { 0, 1, 2 }));
-			}
-			break;
-
-		case Moneda.CABALLO:
-			//CABALLOS QUE INVOLUCRAN EL CERO
-			if(columnaCasilla == 0)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { 0,
-						3 - filaCasilla}));
-			else if (columnaCasilla == 1 && columnaRegion == 0)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { 0,
-						numero}));
-			//CABALLOS NORMALES
-			else if (columnaRegion == 0)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] {numero - 3, numero }));
-			else if (columnaRegion == 2)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
-						numero + 3 }));
-			else if (filaRegion == 0)
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
-						numero + 1 }));
-			else
-				valoresAApostar.addAll(Arrays.asList(new Integer[] { numero -1,
-						numero}));
-			break;
-
-		case Moneda.PLENO:
-			valoresAApostar.add(numero);
-			break;
-
-		case Moneda.CERO:
-			valoresAApostar.add(0);
-			break;
+				break;
+	
+			case Moneda.CABALLO:
+				//CABALLOS QUE INVOLUCRAN EL CERO
+				if(columnaCasilla == 0)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { 0,
+							3 - filaCasilla}));
+				else if (columnaCasilla == 1 && columnaRegion == 0)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { 0,
+							numero}));
+				//CABALLOS NORMALES
+				else if (columnaRegion == 0)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] {numero - 3, numero }));
+				else if (columnaRegion == 2)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
+							numero + 3 }));
+				else if (filaRegion == 0)
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { numero,
+							numero + 1 }));
+				else
+					valoresAApostar.addAll(Arrays.asList(new Integer[] { numero -1,
+							numero}));
+				break;
+				
+			case Moneda.PLENO:
+				valoresAApostar.add(numero);
+				break;
+	
+			case Moneda.CERO:
+				valoresAApostar.add(0);
+				break;
 		}
 
 		System.out.print(filaCasilla + "," + filaRegion + ":"

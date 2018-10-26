@@ -1,5 +1,1 @@
-J color 19 da negro
-J docenas muestra la primera docena mas el numero docena
-J seisena ?????
-J transversal de fila: el primer numero menos 1
-
+J transversal de fila: el primer numero mas 1

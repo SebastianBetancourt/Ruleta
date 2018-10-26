@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -53,8 +54,9 @@ public class Mesa extends JFrame {
 	 * @return El número que cayó de la ruleta después de girarla
 	 */
 	private int rodarRuleta() {
-		//TODO
-		return 4;
+		
+		Random aleatorio = new Random();
+		return aleatorio.nextInt(36);
 	}
 	
 	private void iniciarGUI(){
