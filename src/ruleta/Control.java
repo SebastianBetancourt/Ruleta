@@ -12,7 +12,7 @@ public class Control {
 	private int balance;
 	
 	public Control() {
-		// TODO Auto-generated constructor stub
+		this.balance = 1500;
 	}
 	
 	/**
@@ -20,11 +20,13 @@ public class Control {
 	 * @param numero El número que cayó en la ruleta después de girarla
 	 */
 	public void calcularResultado(ArrayList<Moneda> monedas, int numero) {
+		
 		for(Moneda moneda : monedas) {
-			
+			if(moneda.estaEnLaLista(numero)) {
+				balance +=  moneda.getValor()*moneda.getPremio();
+				
+			}
 		}
+		monedas.clear();
 	}
-	
-
-
 }
