@@ -12,7 +12,7 @@ import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JLabel; 
 import javax.swing.OverlayLayout;
 import javax.swing.SwingUtilities;
 
@@ -21,11 +21,11 @@ import ruleta.Control;
 public class Mesa extends JFrame {
 
 
-	public static final Dimension DIMENSIONES_MESA = new Dimension(833, 391);
-	public static final Dimension DIMENSIONES_CASILLA = new Dimension(56, 56);
-	public static final Dimension DIMENSIONES_CENTRO_REGION = new Dimension((int) DIMENSIONES_CASILLA.getWidth() / 2, (int) DIMENSIONES_CASILLA.getHeight() / 2);
-	public static final Dimension DIMENSIONES_LATERAL_REGION = new Dimension((int) (DIMENSIONES_CASILLA.getWidth() + 1) / 4, (int) (DIMENSIONES_CASILLA.getWidth() +1) / 4);
-	public static final Point ORIGEN_TABLERO = new Point(50, 37);
+	public static final Dimension DIMENSIONES_MESA = new Dimension(716, 374);
+	public static final Dimension DIMENSIONES_CASILLA = new Dimension(43, 51);
+	public static final Dimension DIMENSIONES_CENTRO_REGION = new Dimension(21, 25);
+	public static final Dimension DIMENSIONES_LATERAL_REGION = new Dimension(11, 13);
+	public static final Point ORIGEN_TABLERO = new Point(68, 54);
 	
 	
 	private MacroContenedor macroContenedor;

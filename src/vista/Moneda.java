@@ -6,7 +6,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -328,13 +327,13 @@ public class Moneda extends JLabel {
 			case Moneda.COLOR:
 				if (columnaCasilla < 7) {
 					for (int i = 1; i < 37; i++) {
-						if (!esElNumeroRojo(i)) {
+						if (esElNumeroRojo(i)) {
 							valoresAApostar.add(i);
 						}
 					}
 				} else {
 					for (int i = 1; i < 37; i++) {
-						if (esElNumeroRojo(i)) {
+						if (!esElNumeroRojo(i)) {
 							valoresAApostar.add(i);
 						}
 					}
