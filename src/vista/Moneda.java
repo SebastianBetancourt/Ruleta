@@ -1,6 +1,7 @@
 package vista;
 
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -42,16 +43,76 @@ public class Moneda extends JLabel {
 	/**
 	 * Posibles valores de las fichas, de menor a mayor
 	 */
-	public static final int[] VALORES = { 1, 25, 50 };
+	
 
 	private Point puntoDeAgarre;
+	
 	private Point posAntesDeMoverse;
-
-	/**
-	 * Indicador del valor de la moneda, de acuerdo a VALORES
-	 */
+	
+	private float premio;
+	
+	private int tipoDeApuesta;
+	
+	private final Mesa mesa;
+	
 	private int valor;
+	
 	private ArrayList<Integer> valoresAApostar;
+	
+	public Moneda(Mesa mesa, int xInicial, int yInicial, int valor) {
+		super();
+		this.mesa = mesa;
+		this.valor = valor;
+		this.valoresAApostar = new ArrayList<Integer>();
+		this.setBounds(xInicial, yInicial, ANCHO, ALTO);
+		this.setIcon(new ImageIcon("img/monedas/"+valor+".png"));
+		this.addMouseMotionListener(new MouseMotionListener() {
+
+			public void mouseDragged(MouseEvent e) {
+				if(Mesa.segundos > 0) {
+				int cambioX = e.getX() - puntoDeAgarre.x;
+				int cambioY = e.getY() - puntoDeAgarre.y;
+				int nuevoX = Moneda.this.getX() + cambioX;
+				int nuevoY = Moneda.this.getY() + cambioY;
+				if ((nuevoX > Mesa.DIMENSIONES_CONTENEDOR_MONEDAS.getWidth()) || (nuevoX < 0)) {
+					nuevoX = Moneda.this.getX();
+				}
+				if ((nuevoY > Mesa.DIMENSIONES_CONTENEDOR_MONEDAS.getHeight()) || (nuevoY < 0)) {
+					nuevoY = Moneda.this.getY();
+				}
+				Moneda.this.setLocation(nuevoX, nuevoY);
+				Moneda.this.repaint();
+				}
+			}
+
+			public void mouseMoved(MouseEvent arg0) {
+			}
+
+		});
+
+		this.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e) {
+				puntoDeAgarre = e.getPoint();
+				posAntesDeMoverse = Moneda.this.getLocation();
+
+			}
+			
+			public void mouseReleased(MouseEvent arg0) {
+				System.out.println(puntoDeAgarre);
+				if(determinarTipoApuesta()) {
+					puntoDeAgarre = Moneda.this.getLocation();
+				}else if(Moneda.this.getLocation().getY() > Mesa.DIMENSIONES_CONTENEDOR_NUMEROS.getHeight()){
+					Moneda.this.mesa.eliminarMoneda(Moneda.this);
+				}
+				else {
+					Moneda.this.setLocation(posAntesDeMoverse);
+					Moneda.this.repaint();
+				}
+				determinarValoresAApostar();
+			}
+		});
+	}
 
 	public ArrayList<Integer> getValoresAAPostar() {
 		return valoresAApostar;
@@ -59,10 +120,6 @@ public class Moneda extends JLabel {
     
 	public float getPremio() {
 		return premio;
-	}
-
-	public int getTipoDeApuesta() {
-		return tipoDeApuesta;
 	}
 
 	private void setTipoDeApuesta(int tipoDeApuesta) {
@@ -75,78 +132,15 @@ public class Moneda extends JLabel {
 			this.tipoDeApuesta = tipoDeApuesta;
 		}
 	}
-
+	
+	public int getTipoDeApuesta() {
+		return tipoDeApuesta;
+	}
+	
 	public void setValor(int valor) {
 		this.valor = valor;
 	}
-
-	private float premio;
-	private int tipoDeApuesta;
-
-	public Moneda(int xInicial, int yInicial) {
-		super();
-		this.valoresAApostar = new ArrayList<Integer>();
-		this.setBounds(xInicial, yInicial, ANCHO, ALTO);
-		this.setIcon(new ImageIcon("img/moneda.png"));
-		this.addMouseMotionListener(new MouseMotionListener() {
-
-			public void mouseDragged(MouseEvent e) {
-				int cambioX = e.getX() - puntoDeAgarre.x;
-				int cambioY = e.getY() - puntoDeAgarre.y;
-				int nuevoX = Moneda.this.getX() + cambioX;
-				int nuevoY = Moneda.this.getY() + cambioY;
-				if ((nuevoX > Mesa.DIMENSIONES_MESA.getWidth()) || (nuevoX < 0)) {
-					nuevoX = Moneda.this.getX();
-				}
-				if ((nuevoY > Mesa.DIMENSIONES_MESA.getHeight()) || (nuevoY < 0)) {
-					nuevoY = Moneda.this.getY();
-				}
-				Moneda.this.setLocation(nuevoX, nuevoY);
-				Moneda.this.repaint();
-				
-			}
-
-			public void mouseMoved(MouseEvent arg0) {
-			}
-
-		});
-
-		this.addMouseListener(new MouseListener() {
-
-			public void mouseClicked(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mousePressed(MouseEvent e) {
-				puntoDeAgarre = e.getPoint();
-				posAntesDeMoverse = Moneda.this.getLocation();
-
-			}
-
-			public void mouseReleased(MouseEvent arg0) {
-				System.out.println(puntoDeAgarre);
-				if(determinarTipoApuesta()) {
-					puntoDeAgarre = Moneda.this.getLocation();
-				}else {
-					Moneda.this.setLocation(posAntesDeMoverse);
-					Moneda.this.repaint();
-				}
-				determinarValoresAApostar();
-			}
-		});
-	}
-
+	
 	public int getValor() {
 		return valor;
 	}
@@ -482,21 +476,6 @@ public class Moneda extends JLabel {
 	
 	public boolean estaEnLaLista(int valorObtenido)
 	{
-		ArrayList<Integer> valoresAApostar = new ArrayList<Integer>(this.getValoresAAPostar());
-		int iterador = valoresAApostar.size();
-		while(iterador >= 1)
-		{		
-			iterador = valoresAApostar.size();
-			int mediana = valoresAApostar.get(iterador/2);
-			if(mediana == valorObtenido){
-				return true;
-			}else if(iterador == 1) {
-				break;
-			} else if(mediana<valorObtenido){
-				valoresAApostar = new ArrayList<Integer>(valoresAApostar.subList(iterador/2+1, iterador));
-			} else
-				valoresAApostar = new ArrayList<Integer>(valoresAApostar.subList(0, iterador/2));
+		return this.valoresAApostar.contains(valorObtenido);
 		}
-		return false;
-	}
 }
