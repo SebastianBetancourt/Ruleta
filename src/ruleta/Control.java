@@ -23,15 +23,23 @@ import vista.Moneda;
 
 public class Control {
 	
+	private static final int BALANCE_INICIAL = 200;
 	/**
 	 * Dinero del jugador
 	 */
 	private int balance;
 	
+	/*
+	 * Constructor de Control
+	 */
 	public Control() {
-		this.balance = 1500;
+		this.balance = BALANCE_INICIAL;
 	}
 	
+	/*
+	 * Gets the Balance
+	 * @returns balance
+	 */
 	public int getBalance(){
 		return balance;
 	}
@@ -54,6 +62,9 @@ public class Control {
 		return ganancia;
 	}
 	
+	/*
+	 * Actualiza el valor del balance
+	 */
 	public void sumarABalance(int valor){
 		this.balance += valor;
 	}

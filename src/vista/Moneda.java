@@ -76,7 +76,9 @@ public class Moneda extends JLabel {
 	private int valor;
 	
 	private ArrayList<Integer> valoresAApostar;
-	
+	/*
+	 * 
+	 */
 	public Moneda(Mesa mesa, int xInicial, int yInicial, int valor) {
 		super();
 		this.mesa = mesa;
@@ -105,7 +107,6 @@ public class Moneda extends JLabel {
 
 			public void mouseMoved(MouseEvent arg0) {
 			}
-
 		});
 
 		this.addMouseListener(new MouseAdapter() {
@@ -131,15 +132,26 @@ public class Moneda extends JLabel {
 			}
 		});
 	}
-
+	
+	/*
+	 * Gets the Valores a apostar
+	 */
 	public ArrayList<Integer> getValoresAAPostar() {
 		return valoresAApostar;
 	}
     
+	/*
+	 * Gets the premio
+	 */
 	public float getPremio() {
 		return premio;
 	}
-
+	
+	/*
+	 * Sets Tipo de apuesta
+	 * 
+	 * Setea el tipo de apuesta que tiene la moneda
+	 */
 	private void setTipoDeApuesta(int tipoDeApuesta) {
 		if (tipoDeApuesta == Moneda.ERROR) {
 			// TODO manejar casos de error de apuesta
@@ -151,18 +163,30 @@ public class Moneda extends JLabel {
 		}
 	}
 	
+	/*
+	 * Gets the Tipo de apuesta
+	 */
 	public int getTipoDeApuesta() {
 		return tipoDeApuesta;
 	}
 	
+	/*
+	 * Sets the valor
+	 */
 	public void setValor(int valor) {
 		this.valor = valor;
 	}
 	
+	/*
+	 * Gets the valor
+	 */
 	public int getValor() {
 		return valor;
 	}
 
+	/*
+	 * Gets el centro de la moneda
+	 */
 	public Point getCentro() {
 		return new Point((getX() + (ANCHO / 2)), (getY() + (ALTO / 2)));
 	}
@@ -178,7 +202,10 @@ public class Moneda extends JLabel {
 		}
 		return fila;
 	}
-
+	
+	/*
+	 * @returns la columna de la casilla en la que fue depositada la moneda
+	 */
 	public int getColumnaCasilla() {
 		int diferencia = getCentro().x - Mesa.ORIGEN_TABLERO.x;
 		int columna = -1;
@@ -208,6 +235,10 @@ public class Moneda extends JLabel {
 		return region;
 	}
 
+	/**
+	 * @return La columna de la región en la que se encuentra, relativa a la
+	 *         casilla. Está entre 0 y 3 (exclusivo).
+	 */
 	public int getColumnaRegion() {
 		int region;
 		int posRelativa = Math.floorMod(
@@ -225,6 +256,11 @@ public class Moneda extends JLabel {
 		return region;
 	}
 
+	/*
+	 * Determina el tipo de la apuesta que realiza la moneda, dependiendo de la fila y la
+	 * columna en la que se encuentra, ademas de la fila y la columna de la region dentro de
+	 * la casilla
+	 */
 	public boolean determinarTipoApuesta() {
 		int filaCasilla = this.getFilaCasilla();
 		int columnaCasilla = this.getColumnaCasilla();
@@ -326,6 +362,10 @@ public class Moneda extends JLabel {
 		return esRojo;
 	}
 
+	/*
+	 * Determina los valores por los que se apuesta al colocar la moneda
+	 * Agrega estos valores a un ArrayList en el valor interno de la moneda
+	 */
 	private void determinarValoresAApostar() {
 		int filaCasilla = this.getFilaCasilla();
 		int columnaCasilla = this.getColumnaCasilla();
@@ -492,6 +532,10 @@ public class Moneda extends JLabel {
 		System.out.print("\n");
 	}
 	
+	/*
+	 * Busca entre los valores por los que apostó la moneda si está el valor
+	 * que salió de la ruleta.
+	 */
 	public boolean estaEnLaLista(int valorObtenido)
 	{
 		return this.valoresAApostar.contains(valorObtenido);
