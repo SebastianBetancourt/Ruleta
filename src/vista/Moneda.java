@@ -1,5 +1,23 @@
 package vista;
 
+/*
+ * Clase: Moneda.java
+ * 
+ * Responsabilidad:
+ * Se encarga de almacenar los objetos de tipo moneda, allí está definida la lógica de cada moneda, ademas de definir su movimiento
+ * y sus valores internos.
+ * 
+ * Colaboraciones:
+ * Mesa.java
+ * 
+ * Autores:
+ * @author Joan Sebastian Betancourt-(1744202)
+ * @author Nicolas Lasso Jaramillo-(1740395)
+ * @author Jorge Eduardo Mayor Fernández-(1738661)
+ * @since 28-9-2018
+ * @version 1.0.15
+ */
+
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

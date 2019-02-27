@@ -1,5 +1,23 @@
 package vista;
 
+/*
+ * Clase: Mesa.java
+ * 
+ * Responsabilidad:
+ * Se encarga de graficar la mesa de la ruleta, aquí se declaran las dimensiones de cada componente gráfico y
+ * se organizan en diferentes contenedores. Esta encargado del flujo del juego, de acuerdo al tiempo y las jugadas del usuario.
+ * 
+ * Colaboraciones:
+ * Control.java, Moneda.java
+ * 
+ * Autores:
+ * @author Joan Sebastian Betancourt-(1744202)
+ * @author Nicolas Lasso Jaramillo-(1740395)
+ * @author Jorge Eduardo Mayor Fernández-(1738661)
+ * @since 28-9-2018
+ * @version 1.0.18
+ */
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -14,6 +32,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -237,30 +256,9 @@ public class Mesa extends JFrame {
 	        boton.setIcon(new ImageIcon("img/monedas/"+valorPosible+".png"));
 	        final int valor = valorPosible;
 	        //escucha del boton
-	        boton.addMouseListener(new MouseListener(){
-
-				public void mouseClicked(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				public void mouseEntered(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				public void mouseExited(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-
+	        boton.addMouseListener(new MouseAdapter(){
 				public void mousePressed(MouseEvent arg0) {
 					añadirMoneda(valor, MouseInfo.getPointerInfo().getLocation());
-				}
-
-				public void mouseReleased(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
 				}
 	   
 	        });
@@ -383,6 +381,9 @@ public class Mesa extends JFrame {
 	private void cargarFuente() {
 		final float tamañoFuente = 36f;
 		try {
+			Properties props = System.getProperties();
+			props.setProperty("javax.accessibility.assistive_technologies", "");
+			
 		    fuente = Font.createFont(Font.TRUETYPE_FONT, new File("font.ttf")).deriveFont(tamañoFuente);
 		    GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(fuente);
 		} catch (IOException e) {
@@ -407,7 +408,17 @@ public class Mesa extends JFrame {
 	}
 	
 	private class Rueda extends JPanel{
-
+		
+		static final double VEL_INICIAL_MAXIMA = 3.0;
+		static final double VEL_INICIAL_MINIMA = 2.0;
+	    static final double ACELERACION_POR_DT = -Math.PI/18000;
+	    static final int DT = 15; //milisecs
+	    
+	    double rotacion = 0;
+	    double velocidadDt = 0;
+	    	    
+	    Timer timer;
+	    
 	    Image rueda;
 	    
 	    public Rueda(){
@@ -422,16 +433,6 @@ public class Mesa extends JFrame {
 	         g2d.drawImage(rueda, (int) (-1*DIMENSIONES_RUEDA.getWidth()/2), (int) (-1*DIMENSIONES_RUEDA.getWidth()/2), this);
 	         Toolkit.getDefaultToolkit().sync();
 	    }
-	    
-	    static final double VEL_INICIAL_MAXIMA = 3.0;
-		static final double VEL_INICIAL_MINIMA = 2.0;
-	    static final double ACELERACION_POR_DT = -Math.PI/18000;
-	    static final int DT = 15; //milisecs
-	    
-	    double rotacion = 0;
-	    double velocidadDt = 0;
-	    	    
-	    Timer timer;
 	    
 	    private void rotarDt() {
 	    	rotacion += velocidadDt;

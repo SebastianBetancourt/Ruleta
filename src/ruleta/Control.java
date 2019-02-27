@@ -1,5 +1,22 @@
 package ruleta;
 
+/*
+ * Clase: Control.java
+ * 
+ * Responsabilidad:
+ * Se encarga de controlar la lógica y el balance del usuario al realizar una apuesta.
+ * 
+ * Colaboraciones:
+ * Ninguna
+ * 
+ * Autores:
+ * @author Joan Sebastian Betancourt-(1744202)
+ * @author Nicolas Lasso Jaramillo-(1740395)
+ * @author Jorge Eduardo Mayor Fernández-(1738661)
+ * @since 28-9-2018
+ * @version 1.0.11
+ */
+
 import java.util.ArrayList;
 
 import vista.Moneda;
