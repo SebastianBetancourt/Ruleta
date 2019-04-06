@@ -32,7 +32,6 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -80,6 +79,9 @@ public class Mesa extends JFrame {
 
 	public static int segundos;
 	public static Font fuente;
+	
+	private EscuchaJugar escuchaAction;
+	private EscuchaMoneda escuchaMouse;
 
 	private Container contenedorMacro;
 	private BoxLayout esquemaMacro;
@@ -112,6 +114,10 @@ public class Mesa extends JFrame {
 	private FlowLayout esquemaControles;
 	private JLabel balance;
 
+	/*
+	 * monedas que no estan en juego, listas para ser arrastradas a la mesa
+	 */
+	private ArrayList<Moneda> monedasPreparadas;	
 	protected Control control;
 	/*
 	 * Conjunto de monedas que están en la mesa
@@ -121,8 +127,10 @@ public class Mesa extends JFrame {
 
 	public Mesa() {
 		control = new Control();
-
+		escuchaAction  = new EscuchaJugar();
 		monedas = new ArrayList<Moneda>();
+		
+		escuchaMouse = new EscuchaMoneda();
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -130,7 +138,7 @@ public class Mesa extends JFrame {
 			}
 		});
 	}
-
+	
 	/**
 	 * @return El número que cayó de la ruleta después de girarla
 	 */
@@ -171,7 +179,7 @@ public class Mesa extends JFrame {
 		aviso.setHorizontalAlignment(JLabel.CENTER);
 		aviso.setFont(fuente);
 		aviso.setOpaque(true);
-		aviso.setBackground(new Color(0, 0, 0, 110));
+		aviso.setBackground(new Color(0, 0, 0));
 		aviso.setForeground(Color.WHITE);
 		aviso.setVisible(false);
 
@@ -253,45 +261,30 @@ public class Mesa extends JFrame {
 		boton.setFont(fuente);
 		boton.setText("JUGAR!");
 		boton.setPreferredSize(new Dimension(180, 50));
-		boton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				segundos = 1;
-			}
-		});
+		boton.addActionListener(escuchaAction);
 	}
 
 	/*
 	 * Establece y organiza el panel de controles
 	 */
 	private void iniciarControles() {
+		contenedorControles.add(new JLabel() {
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(0,150);
+			}
+		});
+		
 		// Balance
 		balance = new JLabel("" + control.getBalance());
 		balance.setFont(fuente);
 		balance.setForeground(Color.WHITE);
-
 		contenedorControles.add(balance);
 
+		monedasPreparadas = new ArrayList<Moneda>();
+		
 		// botones que generan monedas
-		for (int valorPosible : MONEDAS_POSIBLES) {
-			JButton boton = new JButton();
-
-			// Estetica del boton
-			boton.setBorderPainted(false);
-			boton.setBorder(null);
-			boton.setFocusable(false);
-			boton.setContentAreaFilled(false);
-			boton.setIcon(new ImageIcon("img/monedas/" + valorPosible + ".png"));
-			final int valor = valorPosible;
-
-			// escucha del boton
-			boton.addMouseListener(new MouseAdapter() {
-				public void mousePressed(MouseEvent arg0) {
-					añadirMoneda(valor, MouseInfo.getPointerInfo()
-							.getLocation());
-				}
-			});
-			contenedorControles.add(boton);
-		}
+		actualizarUI();
 	}
 
 	/*
@@ -300,7 +293,12 @@ public class Mesa extends JFrame {
 	 */
 	private void graficarMonedas() {
 		contenedorMonedas.removeAll();
+		System.out.println("monedas en juego:"+monedas.size());
 		for (Moneda moneda : monedas) {
+			contenedorMonedas.add(moneda);
+		}
+		System.out.println("monedas preparadas:"+monedasPreparadas.size());
+		for (Moneda moneda : monedasPreparadas) {
 			contenedorMonedas.add(moneda);
 		}
 		contenedorMonedas.repaint();
@@ -392,7 +390,7 @@ public class Mesa extends JFrame {
 	}
 
 	/*
-	 * Quita las monedas de la jugaa anterior y prepara el estado de el
+	 * Quita las monedas de la jugada anterior y prepara el estado de el
 	 * siguiente turno
 	 */
 	private void limpiarJugada() {
@@ -402,32 +400,32 @@ public class Mesa extends JFrame {
 	}
 
 	/*
-	 * Crea y ubica una moneda nueva, dependiendo de su balance Acumula las
-	 * monedas en un Arraylist "monedas"
+	 * Revisa que monedas puede usar el usuario, dependiendo de si le
+	 * alcanza el balance; las prepara y las manda a imprimir.
 	 */
-	private void añadirMoneda(int valor, Point posicionRaton) {
-		if (control.getBalance() >= valor) {
-			control.sumarABalance(-1 * valor);
+	private void añadirMonedas() {
 
 			// poner moneda en mesa
-			Random aleatorio = new Random();
-			Moneda moneda = new Moneda(this, 200 + aleatorio.nextInt(200),
-					100 + aleatorio.nextInt(200), valor);
-
-			// Moneda moneda = new Moneda(Mesa.this, posicionRaton.x,
-			// posicionRaton.y, valor);
-			monedas.add(moneda);
-			actualizarUI();
+			//Random aleatorio = new Random();
+			//Moneda moneda = new Moneda(200 + aleatorio.nextInt(200),100 + aleatorio.nextInt(200), valor);
+		monedasPreparadas.clear();
+		final Point posInicial = new Point((int)(DIMENSIONES_CONTENEDOR_NUMEROS.getWidth()/2-(Moneda.ANCHO)*2),(int)(DIMENSIONES_CONTENEDOR_NUMEROS.getHeight()+Moneda.ALTO/2));
+		for (int i = 0; i<4; i++) {
+			if(control.getBalance() >= MONEDAS_POSIBLES[i]){
+				Moneda moneda = new Moneda(posInicial.x+(Moneda.ANCHO*i), posInicial.y, MONEDAS_POSIBLES[i]);
+				monedasPreparadas.add(moneda);
+				moneda.addMouseListener(escuchaMouse);
+				moneda.addMouseMotionListener(escuchaMouse);
+			}
 		}
 	}
-
+	
 	/*
 	 * Elimina la moneda en caso de que una moneda que se haya puesto en el
 	 * tablero, sea regresada a la mesa
 	 */
 	public void eliminarMoneda(Moneda moneda) {
 		control.sumarABalance(moneda.getValor());
-		System.out.println("moneda eliminada");
 		monedas.remove(moneda);
 		contenedorMonedas.remove(moneda);
 		actualizarUI();
@@ -445,6 +443,7 @@ public class Mesa extends JFrame {
 	 */
 	private void actualizarUI() {
 		actualizarSaldo();
+		añadirMonedas();
 		graficarMonedas();
 	}
 
@@ -483,6 +482,13 @@ public class Mesa extends JFrame {
 		}
 	}
 
+	private class EscuchaJugar implements ActionListener
+	{
+		public void actionPerformed(ActionEvent arg0) {
+			segundos = 1;
+		}
+	}
+	
 	/*
 	 * Clase está encargada de la animación de la rueda
 	 */
@@ -546,7 +552,6 @@ public class Mesa extends JFrame {
 			velocidadDt = velocidadInicial * Math.PI / 60;
 			timer = new Timer("movimiento");
 			TimerTask rotacionDt = new TimerTask() {
-
 				@Override
 				public void run() {
 					rotarDt();
@@ -556,5 +561,61 @@ public class Mesa extends JFrame {
 			timer.scheduleAtFixedRate(rotacionDt, 0, DT);
 		}
 	}
+	
+	private class EscuchaMoneda extends MouseAdapter {
+		
+		Point puntoDeAgarre;
+		Point posAntesDeMoverse;
+		Moneda moneda;
+		
+		public void mouseDragged(MouseEvent e) {
+			moneda = (Moneda) e.getSource();
+			if(Mesa.segundos > 0) {
+				
+				
+				int cambioX = e.getX() - puntoDeAgarre.x;
+				int cambioY = e.getY() - puntoDeAgarre.y;
+				int nuevoX = moneda.getX() + cambioX;
+				int nuevoY = moneda.getY() + cambioY;
+				if ((nuevoX > Mesa.DIMENSIONES_CONTENEDOR_MONEDAS.getWidth()) || (nuevoX < 0)) {
+					nuevoX = moneda.getX();
+				}
+				if ((nuevoY > Mesa.DIMENSIONES_CONTENEDOR_MONEDAS.getHeight()) || (nuevoY < 0)) {
+					nuevoY = moneda.getY();
+				}
+				moneda.setLocation(nuevoX, nuevoY);
+				moneda.repaint();
+			}
+		}
+		
+		public void mousePressed(MouseEvent e) {
+			moneda = (Moneda) e.getSource();
+			if(moneda.getTipoDeApuesta() == Moneda.PREPARADA && control.getBalance() >= moneda.getValor()) {
+				control.sumarABalance(-1 * moneda.getValor());
+				monedas.add(moneda);
+				monedasPreparadas.remove(moneda);
+				Mesa.this.actualizarUI();
+				//Mesa.this.añadirMonedas();
+			}
+			puntoDeAgarre = e.getPoint();
+			posAntesDeMoverse = moneda.getLocation();
+		}
+		 
+		public void mouseReleased(MouseEvent e) {
+			moneda = (Moneda) e.getSource();
+			System.out.println(puntoDeAgarre);
+			int estadoAnterior = moneda.getTipoDeApuesta();
+			if(moneda.determinarTipoApuesta()) {
+				puntoDeAgarre = moneda.getLocation();
+			}else if(estadoAnterior == Moneda.PREPARADA || ((Moneda) e.getSource()).getLocation().getY() > Mesa.DIMENSIONES_CONTENEDOR_NUMEROS.getHeight()){
+				Mesa.this.eliminarMoneda(((Moneda) e.getSource()));
+			}
+			else {
+				moneda.setLocation(posAntesDeMoverse);
+				moneda.repaint();
+			}
+			moneda.determinarValoresAApostar();
+		}		
+	}// Fin clase Escucha Mouse
 
-}
+} // Fin clase Mesa
