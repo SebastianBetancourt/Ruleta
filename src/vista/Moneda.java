@@ -71,18 +71,23 @@ public class Moneda extends JLabel {
 	
 	private int valor;
 	
+	private String propietario;
+	
 	private ArrayList<Integer> valoresAApostar;
 	/*
 	 * 
 	 */
 	public Moneda(int xInicial, int yInicial, int valor) {
 		super();
+		propietario = Mesa.nombre;
 		this.valor = valor;
 		this.tipoDeApuesta = Moneda.PREPARADA;
 		this.valoresAApostar = new ArrayList<Integer>();
 		this.setBounds(xInicial, yInicial, ANCHO, ALTO);
 		this.setIcon(new ImageIcon("img/monedas/"+valor+".png"));
+		
 	}
+	
 	
 	/*
 	 * Gets the Valores a apostar

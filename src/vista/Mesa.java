@@ -44,6 +44,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
 import javax.swing.SwingUtilities;
@@ -79,6 +80,8 @@ public class Mesa extends JFrame {
 
 	public static int segundos;
 	public static Font fuente;
+	
+	
 	
 	private EscuchaJugar escuchaAction;
 	private EscuchaMoneda escuchaMouse;
@@ -119,12 +122,17 @@ public class Mesa extends JFrame {
 	 */
 	private ArrayList<Moneda> monedasPreparadas;	
 	protected Control control;
+	
 	/*
 	 * Conjunto de monedas que están en la mesa
 	 */
-
 	private ArrayList<Moneda> monedas;
-
+	
+	//Atributos Cliente
+	protected static String nombre;
+	
+	
+	
 	public Mesa() {
 		control = new Control();
 		escuchaAction  = new EscuchaJugar();
@@ -148,6 +156,7 @@ public class Mesa extends JFrame {
 	}
 
 	private void iniciarGUI() {
+		nombre = JOptionPane.showInputDialog(this, "Ingresa tu nombre");
 		cargarFuente();
 
 		// Instanciar los contenedores
@@ -618,4 +627,7 @@ public class Mesa extends JFrame {
 		}		
 	}// Fin clase Escucha Mouse
 
+	
+	
+	
 } // Fin clase Mesa
